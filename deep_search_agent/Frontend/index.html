@@ -1,0 +1,412 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+.app{--bg:#f7f6f3;--bg2:#eeecea;--bg3:#e4e2de;--card:#ffffff;--border:#dddbd7;--border2:#ccc9c4;--ink:#111110;--ink2:#4a4845;--ink3:#6a6860;--ink4:#9a9893;--accent:#16a37f;--accent-dim:#e6f5f0;--accent-dark:#0d7a5f;--accent-text:#0a5c47;--amber:#c47a0a;--amber-dim:#fef3dc;--blue:#1a5fa8;--blue-dim:#e8f1fb;--purple:#5a3fc0;--purple-dim:#f0eeff;--coral:#c4401a;--coral-dim:#fdf0ec;--lbl:#b8b5b0;--mono:'DM Mono',monospace;font-family:'Sora','Segoe UI',sans-serif;background:var(--bg);color:var(--ink);min-height:600px;display:flex;flex-direction:column;transition:background 0.3s,color 0.3s}
+.app.dark{--bg:#0e0e0d;--bg2:#161614;--bg3:#1e1e1b;--card:#1a1a17;--border:#2c2c28;--border2:#3a3a35;--ink:#f0efe9;--ink2:#c8c5be;--ink3:#9a9790;--ink4:#5a5a55;--accent:#1ed9a8;--accent-dim:#0d2b22;--accent-dark:#17b38a;--accent-text:#1ed9a8;--amber:#f0a830;--amber-dim:#2a1f08;--blue:#4a9aed;--blue-dim:#0e1e35;--purple:#9a7ff5;--purple-dim:#1a1535;--coral:#f07050;--coral-dim:#2a1008;--lbl:#b8b5b0}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:0.5px solid var(--border);background:var(--card)}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:32px;height:32px;border-radius:9px;background:var(--accent);display:flex;align-items:center;justify-content:center}
+.brand-icon svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
+.brand-name{font-size:15px;font-weight:500;color:var(--ink);letter-spacing:-0.02em}
+.brand-name em{color:var(--accent);font-style:normal}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.version-pill{font-size:10px;font-family:var(--mono);background:var(--accent-dim);color:var(--accent-text);padding:3px 9px;border-radius:20px;border:0.5px solid var(--accent-dark);letter-spacing:0.04em}
+.dark-toggle{display:flex;align-items:center;gap:7px;padding:6px 12px;border:0.5px solid var(--border2);border-radius:20px;cursor:pointer;background:var(--bg2);color:var(--lbl);font-size:12px;font-family:inherit;transition:all 0.2s}
+.dark-toggle:hover{border-color:var(--accent);color:var(--accent)}
+.toggle-track{width:28px;height:16px;border-radius:8px;background:var(--border2);position:relative;transition:background 0.2s;flex-shrink:0}
+.app.dark .toggle-track{background:var(--accent)}
+.toggle-thumb{width:12px;height:12px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:transform 0.2s}
+.app.dark .toggle-thumb{transform:translateX(12px)}
+
+.hero{padding:28px 20px 20px;border-bottom:0.5px solid var(--border)}
+.hero-label{font-size:10px;letter-spacing:0.1em;color:var(--lbl);font-weight:500;text-transform:uppercase;margin-bottom:8px;font-family:var(--mono)}
+.hero-heading{font-size:22px;font-weight:500;color:var(--ink);line-height:1.25;margin-bottom:5px;letter-spacing:-0.03em}
+.hero-sub{font-size:13px;color:var(--lbl);font-weight:400;line-height:1.6;max-width:560px}
+
+.search-box{padding:16px 20px;border-bottom:0.5px solid var(--border);background:var(--card)}
+.search-inner{display:flex;gap:8px;align-items:center;border:1px solid var(--border2);border-radius:12px;background:var(--bg);padding:6px 6px 6px 16px;transition:border-color 0.2s}
+.search-inner:focus-within{border-color:var(--accent)}
+.search-inner input{flex:1;border:none;background:transparent;font-family:inherit;font-size:14px;color:var(--ink);outline:none;padding:6px 0}
+.search-inner input::placeholder{color:var(--lbl)}
+.search-go{display:flex;align-items:center;gap:7px;padding:9px 18px;background:var(--accent);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;transition:background 0.15s,transform 0.1s;white-space:nowrap}
+.search-go:hover{background:var(--accent-dark)}
+.search-go:active{transform:scale(0.97)}
+.search-go svg{width:14px;height:14px;stroke:#fff;fill:none;stroke-width:2.2}
+
+.opts{display:flex;gap:20px;margin-top:14px;flex-wrap:wrap;align-items:center}
+.opt-group{display:flex;align-items:center;gap:8px}
+.opt-group-label{font-size:12px;font-weight:500;color:#b8b5b0;font-family:var(--mono);white-space:nowrap}
+.opt-seg{display:flex;border:1px solid var(--border2);border-radius:8px;overflow:hidden;background:var(--bg)}
+.opt-seg button{padding:6px 13px;font-size:12px;font-family:inherit;background:transparent;border:none;border-right:0.5px solid var(--border2);color:var(--ink2);cursor:pointer;transition:all 0.15s;font-weight:400}
+.opt-seg button:last-child{border-right:none}
+.opt-seg button.on{background:var(--accent);color:#fff;font-weight:500}
+.opt-seg button:not(.on):hover{background:var(--bg3);color:var(--ink)}
+
+.pipeline-bar{display:none;padding:12px 20px;border-bottom:0.5px solid var(--border);background:var(--bg2)}
+.pipeline-bar.show{display:block}
+.pipe-label{font-size:10px;letter-spacing:0.08em;color:var(--lbl);font-family:var(--mono);margin-bottom:9px;text-transform:uppercase}
+.pipe-steps{display:flex;align-items:center;overflow-x:auto;padding-bottom:2px}
+.pstep{display:flex;align-items:center;flex-shrink:0}
+.pnode{display:flex;align-items:center;gap:6px;padding:6px 11px;border-radius:6px;border:0.5px solid var(--border2);background:var(--card);font-size:11px;color:var(--lbl);transition:all 0.25s;white-space:nowrap;font-family:var(--mono)}
+.pnode.active{border-color:var(--accent);background:var(--accent-dim);color:var(--accent-text)}
+.pnode.done{border-color:var(--accent-dark);background:var(--accent-dim);color:var(--accent-text)}
+.pnode.err{border-color:var(--coral);background:var(--coral-dim);color:var(--coral)}
+.pdot{width:6px;height:6px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:background 0.25s}
+.pnode.active .pdot{background:var(--accent);animation:blink 1s infinite}
+.pnode.done .pdot{background:var(--accent)}
+.pnode.err .pdot{background:var(--coral)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.25}}
+.parrow{width:20px;height:0.5px;background:var(--border2);flex-shrink:0;margin:0 2px}
+
+.body{display:flex;flex:1;min-height:0}
+.sidebar{width:260px;flex-shrink:0;border-right:0.5px solid var(--border);display:flex;flex-direction:column;background:var(--bg2)}
+.sidebar-head{padding:12px 14px;border-bottom:0.5px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.sidebar-head span{font-size:10px;letter-spacing:0.08em;color:var(--lbl);font-family:var(--mono);text-transform:uppercase}
+.sidebar-head em{font-style:normal;font-size:10px;font-family:var(--mono);color:var(--lbl)}
+.log{flex:1;padding:10px;display:flex;flex-direction:column;gap:5px;overflow-y:auto}
+.log-empty{padding:24px 8px;text-align:center;font-size:12px;color:var(--lbl);line-height:1.7}
+.log-item{padding:9px 10px;border-radius:8px;background:var(--card);border:0.5px solid var(--border);animation:pop 0.2s ease}
+@keyframes pop{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+.log-tag{font-size:9px;font-family:var(--mono);font-weight:500;padding:2px 6px;border-radius:4px;display:inline-block;margin-bottom:4px;letter-spacing:0.05em}
+.t-req{background:var(--blue-dim);color:var(--blue)}
+.t-plan{background:var(--amber-dim);color:var(--amber)}
+.t-lead{background:var(--accent-dim);color:var(--accent-text)}
+.t-search{background:var(--coral-dim);color:var(--coral)}
+.t-reflect{background:var(--purple-dim);color:var(--purple)}
+.t-cite{background:var(--bg3);color:var(--ink2)}
+.log-msg{font-size:11px;color:var(--ink2);line-height:1.5}
+
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;text-align:center;gap:16px}
+.empty-orb{width:56px;height:56px;border-radius:16px;background:var(--accent-dim);display:flex;align-items:center;justify-content:center;border:0.5px solid var(--accent-dark)}
+.empty-orb svg{width:24px;height:24px;stroke:var(--accent);fill:none;stroke-width:1.8}
+.empty-title{font-size:17px;font-weight:500;color:var(--ink);letter-spacing:-0.02em}
+.empty-desc{font-size:13px;color:var(--lbl);line-height:1.7;max-width:360px}
+.suggestions{display:grid;grid-template-columns:1fr 1fr;gap:7px;max-width:460px;width:100%;margin-top:4px}
+.sug{padding:10px 13px;border:0.5px solid var(--border2);border-radius:8px;background:var(--card);font-size:12px;color:var(--ink2);cursor:pointer;text-align:left;line-height:1.5;font-family:inherit;transition:all 0.15s}
+.sug:hover{border-color:var(--accent);color:var(--accent-text);background:var(--accent-dim)}
+
+.skel{display:none;flex-direction:column;gap:10px;padding:24px}
+.skel.show{display:flex}
+.sk{border-radius:5px;background:var(--bg3);animation:shim 1.3s infinite}
+@keyframes shim{0%,100%{opacity:0.45}50%{opacity:1}}
+
+.result{display:none;padding:24px;flex-direction:column;gap:20px}
+.result.show{display:flex}
+.result-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.result-q{font-size:18px;font-weight:500;color:var(--ink);line-height:1.3;letter-spacing:-0.02em;flex:1}
+.meta-pills{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.mpill{font-size:10px;font-family:var(--mono);padding:4px 9px;border-radius:20px;border:0.5px solid var(--border2);color:var(--lbl);background:var(--card)}
+.mpill.green{border-color:var(--accent-dark);background:var(--accent-dim);color:var(--accent-text)}
+.sources-strip{display:flex;gap:6px;flex-wrap:wrap}
+.src-chip{display:flex;align-items:center;gap:6px;padding:5px 10px;border:0.5px solid var(--border);border-radius:6px;background:var(--card);font-size:11px;color:var(--ink2);max-width:200px;overflow:hidden}
+.src-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.report-body{font-size:13px;line-height:1.8;color:var(--ink2)}
+.report-body h2{font-size:15px;font-weight:500;color:var(--ink);margin:16px 0 6px;letter-spacing:-0.01em}
+.report-body h3{font-size:12px;font-weight:500;color:var(--ink2);margin:12px 0 4px;text-transform:uppercase;letter-spacing:0.05em}
+.report-body p{margin-bottom:10px}
+.report-body ul{padding-left:18px;margin-bottom:10px}
+.report-body li{margin-bottom:4px}
+.cref{font-size:9px;font-family:var(--mono);background:var(--blue-dim);color:var(--blue);padding:1px 4px;border-radius:3px;vertical-align:super}
+.reflect-box{border:0.5px solid var(--purple);border-radius:8px;padding:12px 14px;background:var(--purple-dim)}
+.reflect-label{font-size:9px;font-family:var(--mono);color:var(--purple);letter-spacing:0.07em;margin-bottom:5px;text-transform:uppercase}
+.reflect-text{font-size:12px;color:var(--ink2);line-height:1.6}
+.cite-section{border-top:0.5px solid var(--border);padding-top:16px}
+.cite-label{font-size:10px;font-family:var(--mono);letter-spacing:0.08em;color:var(--lbl);text-transform:uppercase;margin-bottom:10px}
+.cite-row{display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:0.5px solid var(--border);font-size:11px}
+.cite-n{font-family:var(--mono);color:var(--lbl);min-width:20px;font-size:10px}
+.cite-url{color:var(--blue);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cite-badge{font-size:9px;font-family:var(--mono);padding:2px 6px;border-radius:4px;flex-shrink:0}
+.cb-ok{background:var(--accent-dim);color:var(--accent-text)}
+.cb-warn{background:var(--amber-dim);color:var(--amber)}
+</style>
+
+<h2 class="sr-only">Deep Search Agent — research UI with dark mode</h2>
+
+<div class="app" id="app">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/><line x1="8" y1="11" x2="14" y2="11"/><line x1="11" y1="8" x2="11" y2="14"/></svg>
+      </div>
+      <span class="brand-name">Deep<em>Search</em></span>
+    </div>
+    <div class="topbar-right">
+      <span class="version-pill">gemini-2.1-flash-lite-preview</span>
+      <button class="dark-toggle" onclick="toggleDark()">
+        <div class="toggle-track"><div class="toggle-thumb"></div></div>
+        <span>Dark mode</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="hero-label">multi-agent research system</div>
+    <div class="hero-heading">6 AI agents. One deep answer.</div>
+    <div class="hero-sub">Requirement gathering → planning → orchestration → web search → reflection → citations — all in one pipeline.</div>
+  </div>
+
+  <div class="search-box">
+    <div class="search-inner">
+      <input id="qin" type="text" placeholder="Ask anything — e.g. How does Pakistan's PSX perform vs global markets?" />
+      <button class="search-go" onclick="doSearch()">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="22" y2="22"/></svg>
+        Search
+      </button>
+    </div>
+    <div class="opts">
+      <div class="opt-group">
+        <span class="opt-group-label">Depth</span>
+        <div class="opt-seg">
+          <button class="on" onclick="pick(this,'depth',1)">Quick</button>
+          <button onclick="pick(this,'depth',3)">Standard</button>
+          <button onclick="pick(this,'depth',5)">Deep</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <span class="opt-group-label">Queries</span>
+        <div class="opt-seg">
+          <button class="on" onclick="pick(this,'queries',2)">2</button>
+          <button onclick="pick(this,'queries',3)">3</button>
+          <button onclick="pick(this,'queries',5)">5</button>
+        </div>
+      </div>
+      <div class="opt-group">
+        <span class="opt-group-label">Format</span>
+        <div class="opt-seg">
+          <button class="on" onclick="pick(this,'fmt','report')">Report</button>
+          <button onclick="pick(this,'fmt','bullets')">Bullets</button>
+          <button onclick="pick(this,'fmt','json')">JSON</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pipeline-bar" id="pbar">
+    <div class="pipe-label">agent pipeline</div>
+    <div class="pipe-steps">
+      <div class="pstep"><div class="pnode" id="p0"><span class="pdot"></span>requirement</div></div>
+      <div class="parrow"></div>
+      <div class="pstep"><div class="pnode" id="p1"><span class="pdot"></span>planning</div></div>
+      <div class="parrow"></div>
+      <div class="pstep"><div class="pnode" id="p2"><span class="pdot"></span>lead agent</div></div>
+      <div class="parrow"></div>
+      <div class="pstep"><div class="pnode" id="p3"><span class="pdot"></span>search</div></div>
+      <div class="parrow"></div>
+      <div class="pstep"><div class="pnode" id="p4"><span class="pdot"></span>reflection</div></div>
+      <div class="parrow"></div>
+      <div class="pstep"><div class="pnode" id="p5"><span class="pdot"></span>citations</div></div>
+    </div>
+  </div>
+
+  <div class="body">
+    <div class="sidebar">
+      <div class="sidebar-head">
+        <span>live log</span>
+        <em id="logCount">idle</em>
+      </div>
+      <div class="log" id="logFeed">
+        <div class="log-empty">Agent activity<br>will stream here.</div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="empty" id="emptyView">
+        <div class="empty-orb">
+          <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+        </div>
+        <div class="empty-title">Research anything, deeply.</div>
+        <div class="empty-desc">Type a query or pick a suggestion. Six specialized agents collaborate to find, verify, and synthesize a complete answer with citations.</div>
+        <div class="suggestions">
+          <button class="sug" onclick="useSug(this)">What is agentic AI and where is it headed in 2025?</button>
+          <button class="sug" onclick="useSug(this)">How does Pakistan's PSX stock exchange work?</button>
+          <button class="sug" onclick="useSug(this)">Best open-source LLMs for low-resource languages</button>
+          <button class="sug" onclick="useSug(this)">OpenAI Agents SDK — how does it work?</button>
+        </div>
+      </div>
+
+      <div class="skel" id="skelView">
+        <div class="sk" style="height:26px;width:55%"></div>
+        <div class="sk" style="height:13px;width:88%"></div>
+        <div class="sk" style="height:13px;width:72%"></div>
+        <div class="sk" style="height:13px;width:80%"></div>
+        <div style="display:flex;gap:6px;margin-top:4px">
+          <div class="sk" style="height:22px;width:90px;border-radius:20px"></div>
+          <div class="sk" style="height:22px;width:70px;border-radius:20px"></div>
+          <div class="sk" style="height:22px;width:80px;border-radius:20px"></div>
+        </div>
+        <div class="sk" style="height:13px;width:93%;margin-top:8px"></div>
+        <div class="sk" style="height:13px;width:78%"></div>
+        <div class="sk" style="height:13px;width:85%"></div>
+        <div class="sk" style="height:13px;width:65%"></div>
+        <div class="sk" style="height:13px;width:90%"></div>
+      </div>
+
+      <div class="result" id="resultView">
+        <div class="result-header">
+          <div class="result-q" id="rq"></div>
+          <div class="meta-pills" id="rpills"></div>
+        </div>
+        <div class="sources-strip" id="rsrcs"></div>
+        <div class="report-body" id="rbody"></div>
+        <div class="reflect-box" id="rreflect" style="display:none">
+          <div class="reflect-label">reflection · quality review</div>
+          <div class="reflect-text" id="rreflect-text"></div>
+        </div>
+        <div class="cite-section" id="rcites" style="display:none">
+          <div class="cite-label">sources & citations</div>
+          <div id="rcite-list"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const cfg={depth:1,queries:2,fmt:'report'};
+let busy=false,logN=0;
+
+function toggleDark(){document.getElementById('app').classList.toggle('dark');}
+
+function pick(btn,key,val){
+  btn.closest('.opt-seg').querySelectorAll('button').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  cfg[key]=val;
+}
+
+function useSug(btn){
+  document.getElementById('qin').value=btn.textContent.trim();
+  document.getElementById('qin').focus();
+}
+
+function log(tag,cls,msg){
+  const feed=document.getElementById('logFeed');
+  if(logN===0) feed.innerHTML='';
+  logN++;
+  document.getElementById('logCount').textContent=logN+' events';
+  const d=document.createElement('div');
+  d.className='log-item';
+  d.innerHTML=`<div class="log-tag ${cls}">${tag}</div><div class="log-msg">${msg}</div>`;
+  feed.appendChild(d);
+  feed.scrollTop=feed.scrollHeight;
+}
+
+function setP(id,state){document.getElementById('p'+id).className='pnode '+state;}
+
+function showView(name){
+  const map={empty:'emptyView',skel:'skelView',result:'resultView'};
+  Object.entries(map).forEach(([n,id])=>{
+    const el=document.getElementById(id);
+    if(n===name){
+      if(n==='result') el.className='result show';
+      else if(n==='skel') el.className='skel show';
+      else el.style.display='';
+    } else {
+      if(n==='result') el.className='result';
+      else if(n==='skel') el.className='skel';
+      else el.style.display='none';
+    }
+  });
+}
+
+async function doSearch(){
+  const q=document.getElementById('qin').value.trim();
+  if(!q||busy) return;
+  busy=true; logN=0;
+  showView('skel');
+  document.getElementById('pbar').className='pipeline-bar show';
+  document.getElementById('logFeed').innerHTML='';
+  document.getElementById('logCount').textContent='0 events';
+  for(let i=0;i<6;i++) setP(i,'');
+
+  const events=[
+    {p:0,t:0,   tag:'REQUIREMENT',cls:'t-req',   msg:'Analyzing query intent, expanding scope...'},
+    {p:1,t:900, tag:'PLANNING',   cls:'t-plan',  msg:`Generating ${cfg.queries} focused sub-queries...`},
+    {p:2,t:2000,tag:'LEAD AGENT', cls:'t-lead',  msg:'Orchestrating pipeline, delegating to sub-agents...'},
+    {p:3,t:3200,tag:'SEARCH',     cls:'t-search',msg:'Calling web_search + extract_page via Tavily...'},
+    {p:4,t:5000,tag:'REFLECTION', cls:'t-reflect',msg:'Reviewing quality, checking for gaps...'},
+    {p:5,t:6400,tag:'CITATIONS',  cls:'t-cite',  msg:'Formatting and verifying all sources...'},
+  ];
+  const extra=[
+    {t:4000,tag:'SEARCH',    cls:'t-search',msg:'Extracting full content from top URLs...'},
+    {t:5800,tag:'LEAD AGENT',cls:'t-lead',  msg:'Merging findings across all sub-queries...'},
+  ];
+
+  const timers=[];
+  events.forEach((e,i)=>{
+    timers.push(setTimeout(()=>{
+      if(i>0) setP(events[i-1].p,'done');
+      setP(e.p,'active');
+      log(e.tag,e.cls,e.msg);
+    },e.t));
+  });
+  extra.forEach(e=>timers.push(setTimeout(()=>log(e.tag,e.cls,e.msg),e.t)));
+
+  try{
+    const res = await fetch('https://YOUR-APP-NAME.railway.app/search', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ query: q, depth: cfg.depth, queries: cfg.queries, fmt: cfg.fmt })
+});
+const data = await res.json();
+const d = JSON.parse(data.report);   // parse the markdown string into display
+    timers.forEach(clearTimeout);
+    events.forEach(e=>setP(e.p,'done'));
+    log('LEAD AGENT','t-lead','Report complete. Rendering results...');
+    showView('result');
+    render(q,d);
+  }catch(err){
+    timers.forEach(clearTimeout);
+    for(let i=0;i<6;i++) setP(i,'');
+    setP(0,'err');
+    log('ERROR','t-search','Search failed — check API keys in .env');
+    showView('empty');
+    console.error(err);
+  }
+  busy=false;
+}
+
+function render(q,d){
+  document.getElementById('rq').textContent=d.query_display||q;
+  document.getElementById('rpills').innerHTML=
+    `<span class="mpill green">${d.sources_count||0} sources</span>
+     <span class="mpill">${d.sub_queries_count||0} sub-queries</span>
+     <span class="mpill">${d.time_s||0}s</span>
+     <span class="mpill">${d.quality||'good'}</span>`;
+  document.getElementById('rsrcs').innerHTML=(d.sources||[]).slice(0,7).map(s=>
+    `<div class="src-chip"><div class="src-dot" style="background:${s.reliable?'var(--accent)':'var(--amber)'}"></div>
+     <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${s.title}</span></div>`
+  ).join('');
+  document.getElementById('rbody').innerHTML=md(d.report||'');
+  if(d.reflection_feedback){
+    document.getElementById('rreflect').style.display='block';
+    document.getElementById('rreflect-text').textContent=d.reflection_feedback;
+  }
+  if(d.citations&&d.citations.length){
+    document.getElementById('rcites').style.display='block';
+    document.getElementById('rcite-list').innerHTML=d.citations.map(c=>
+      `<div class="cite-row">
+        <span class="cite-n">[${c.n}]</span>
+        <span class="cite-url">${c.url}</span>
+        <span class="cite-badge ${c.reliable?'cb-ok':'cb-warn'}">${c.reliable?'verified':'check'}</span>
+      </div>`
+    ).join('');
+  }
+}
+
+function md(s){
+  return s
+    .replace(/^## (.+)$/gm,'<h2>$1</h2>')
+    .replace(/^### (.+)$/gm,'<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\[(\d+)\]/g,'<span class="cref">$1</span>')
+    .replace(/^[-*] (.+)$/gm,'<li>$1</li>')
+    .replace(/(<li>[\s\S]+?<\/li>)/g,'<ul>$1</ul>')
+    .split('\n').map(l=>l.match(/^<[hul]/)?l:l?`<p>${l}</p>`:'').join('');
+}
+
+document.getElementById('qin').addEventListener('keydown',e=>{if(e.key==='Enter') doSearch();});
+</script>
