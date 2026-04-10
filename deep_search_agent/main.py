@@ -311,13 +311,11 @@ Then hand off to PlanningAgent.
 # ENTRY POINT
 # ════════════════════════════════════════════════════════════════════════
 
-async def run(query: str):
+async def run(query: str) -> str:          # ← add return type
     if not GEMINI_API_KEY:
-        print(" Missing GEMINI_API_KEY in .env")
-        return
+        return "Error: Missing GEMINI_API_KEY"
     if not TAVILY_API_KEY:
-        print(" Missing TAVILY_API_KEY in .env")
-        return
+        return "Error: Missing TAVILY_API_KEY"
 
     print(f"\n Deep Search Agentic System")
     print(f"{'─' * 55}")
@@ -330,6 +328,7 @@ async def run(query: str):
         starting_agent=requirement_gathering_agent,
         input=query,
     )
+    
 
     print("\n" + "═" * 55)
     print(result.final_output)
@@ -339,6 +338,6 @@ async def run(query: str):
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description="Deep Search Agentic System")
-    parser.add_argument("query", type=str, help="What are the current top trends in Agentic AI research?")
+    parser.add_argument("query", type=str, help="Your research query")
     args = parser.parse_args()
     asyncio.run(run(args.query))
