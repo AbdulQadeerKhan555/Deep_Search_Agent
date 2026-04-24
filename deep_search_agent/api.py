@@ -2,7 +2,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from main import run
-import asyncio
 
 app = FastAPI()
 
@@ -21,6 +20,8 @@ class SearchRequest(BaseModel):
 
 @app.post("/search")
 async def search(body: SearchRequest):
+    # depth, queries, and fmt are currently placeholders for future expansion
+    # as the underlying main.run logic is fixed to the agent pipeline
     result = await run(body.query)
     return {"report": result, "success": True}
 

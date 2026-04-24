@@ -44,7 +44,7 @@ TAVILY_API_KEY = os.getenv("TAVILY_API_KEY", "")
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 
 # Gemini model to use — flash is fast & cheap, pro is more capable
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite-preview")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
 
 MAX_CONTENT_LEN = 3000  # chars per page snippet
 
@@ -185,18 +185,17 @@ You are a citations formatting specialist. You receive research findings with UR
 
 Your job:
 1. Extract all URLs mentioned in the findings.
-2. Format them as clean, numbered citations.
+2. Format them as clean citations with "n", "url", and "reliable" fields.
 3. Remove any duplicate URLs.
-4. Flag any URLs that look unreliable (e.g., social media, unknown blogs).
+4. Flag any URLs that look unreliable.
 
 Return a JSON object:
 {
   "citations": [
-    {"number": 1, "url": "https://...", "title": "...", "reliable": true},
-    {"number": 2, "url": "https://...", "title": "...", "reliable": false, "warning": "Social media source"}
+    {"n": 1, "url": "https://...", "title": "...", "reliable": true},
+    {"n": 2, "url": "https://...", "title": "...", "reliable": false}
   ],
-  "total": 5,
-  "reliable_count": 4
+  "total": 5
 }
 """,
 )
@@ -218,15 +217,22 @@ Your workflow:
 1. Read the plan and identify all sub-queries to research.
 2. For EACH sub-query, call `SearchAgent` to gather findings.
 3. Collect all findings, then call `ReflectionAgent` to review quality.
-4. If ReflectionAgent suggests follow-up queries (gaps), research those too via `SearchAgent`.
-5. Call `CitationsAgent` to format all sources into clean citations.
-6. Write the final comprehensive research report in markdown:
-   - Start with an executive summary.
-   - Cover each major theme with findings and inline citations [1], [2], etc.
-   - End with a "## Key Takeaways" section (3-5 bullets).
-   - Append the formatted citations list at the bottom.
+4. If ReflectionAgent suggests follow-up queries, research those too via `SearchAgent`.
+5. Call `CitationsAgent` to format all sources.
+6. Return a final JSON object exactly in this format:
+{
+  "query_display": "<original query>",
+  "sources_count": <total unique sources>,
+  "sub_queries_count": <number of sub-queries run>,
+  "time_s": <estimate of time taken in seconds>,
+  "quality": "<quality rating from ReflectionAgent>",
+  "sources": [{"title": "...", "reliable": true}],
+  "report": "<The full markdown research report with executive summary, themes, and takeaways>",
+  "reflection_feedback": "<The feedback string from ReflectionAgent>",
+  "citations": [{"n": 1, "url": "...", "reliable": true}]
+}
 
-Be thorough. Always reflect before finalizing. Always cite your sources.
+Ensure the "report" field contains the full markdown. Do not include any text outside this JSON object.
 """,
     tools=[
         search_agent.as_tool(
@@ -333,6 +339,7 @@ async def run(query: str) -> str:          # ← add return type
     print("\n" + "═" * 55)
     print(result.final_output)
     print("═" * 55 + "\n")
+    return result.final_output
 
 
 if __name__ == "__main__":

@@ -346,13 +346,22 @@ async function doSearch(){
   extra.forEach(e=>timers.push(setTimeout(()=>log(e.tag,e.cls,e.msg),e.t)));
 
   try{
-    const res = await fetch('https://YOUR-APP-NAME.railway.app/search', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ query: q, depth: cfg.depth, queries: cfg.queries, fmt: cfg.fmt })
-});
-const data = await res.json();
-const d = JSON.parse(data.report);   // parse the markdown string into display
+    const res = await fetch('http://127.0.0.1:8000/search', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: q, depth: cfg.depth, queries: cfg.queries, fmt: cfg.fmt })
+    });
+    const data = await res.json();
+    
+    // Check if report is already an object or a string
+    let d;
+    try {
+      d = typeof data.report === 'string' ? JSON.parse(data.report) : data.report;
+    } catch(e) {
+      // Fallback if the agent returned plain markdown instead of JSON
+      d = { report: data.report, query_display: q, sources_count: 0, sub_queries_count: cfg.queries, time_s: 0, quality: 'good' };
+    }
+
     timers.forEach(clearTimeout);
     events.forEach(e=>setP(e.p,'done'));
     log('LEAD AGENT','t-lead','Report complete. Rendering results...');
