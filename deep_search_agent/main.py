@@ -44,7 +44,7 @@ TAVILY_API_KEY = os.getenv("TAVILY_API_KEY", "")
 GEMINI_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/openai/"
 
 # Gemini model to use — flash is fast & cheap, pro is more capable
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.1-flash-lite-preview")
 
 MAX_CONTENT_LEN = 3000  # chars per page snippet
 

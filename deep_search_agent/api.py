@@ -23,8 +23,13 @@ async def search(body: SearchRequest):
     # depth, queries, and fmt are currently placeholders for future expansion
     # as the underlying main.run logic is fixed to the agent pipeline
     result = await run(body.query)
+
     return {"report": result, "success": True}
 
 @app.get("/health")
 async def health():
     return {"status": "ok"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
