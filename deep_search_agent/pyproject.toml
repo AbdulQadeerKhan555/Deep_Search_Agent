@@ -10,4 +10,5 @@ dependencies = [
     "fastapi",
     "uvicorn",
     "python-dotenv",
+    "chainlit>=2.11.1",
 ]
